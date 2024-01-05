@@ -108,13 +108,13 @@ const OwnLocation = () => {
 
   return (
     <div className='w-full flex flex-col gap-5 p-5' onClick={() => setShowDrop(false)}>
-      <div className='w-full flex gap-2 justify-start items-center'>
-        <div className='w-1/12 bg-[#e9e8e8] px-2 py-3 rounded-[4px] text-center'>
+      <div className='w-full flex lg:flex-row flex-col gap-2 justify-start items-center'>
+        <div className='w-full lg:w-1/12 bg-[#e9e8e8] px-2 py-3 rounded-[4px] text-center'>
           <label className='text-sm' htmlFor='city'>
             Search City
           </label>
         </div>
-        <div className='w-8/12 relative'>
+        <div className='w-full lg:w-8/12 relative'>
           <input
             id='city'
             placeholder='search by city'
@@ -141,12 +141,12 @@ const OwnLocation = () => {
             </div>
           )}
         </div>
-        <div className='w-1/12'>
+        <div className='w-full lg:w-1/12'>
           <button className='bg-teal-500 w-full px-2 py-3 rounded-[4px] text-white' onClick={FindCityWeather}>
             Find
           </button>
         </div>
-        <div className='w-1/12'>
+        <div className='w-full lg:w-1/12'>
           <button className='bg-blue-500 w-full px-2 py-3 rounded-[4px] text-white' onClick={() => setRefetch(true)}>
             Current Location
           </button>
