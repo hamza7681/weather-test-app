@@ -11,7 +11,7 @@ const OwnLocation = () => {
   const [weather, setWeather] = useState(null)
   const [cityData, setCityData] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [city, setCity] = useState(null)
+  const [city, setCity] = useState([])
   const [geometry, setGeometry] = useState({ lat: null, lng: null })
   const [showDrop, setShowDrop] = useState(false)
   const [refetch, setRefetch] = useState(false)
@@ -21,17 +21,24 @@ const OwnLocation = () => {
     let query = e.target.value
     setSearchCity(query)
     handleDebounceApiCall(query)
+    if (query === '') {
+      setCity([])
+      setShowDrop(false)
+    }
   }
 
   const handleDebounceApiCall = debounce(async (value) => {
     try {
+      // const res = await axios.get(
+      //   `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
+      //     value
+      //   )}&key=84d4dbc9cd874ed9b10123e888341479`
+      // )
       const res = await axios.get(
-        `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
-          value
-        )}&key=84d4dbc9cd874ed9b10123e888341479`
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${value}.json?proximity=ip&access_token=pk.eyJ1IjoiaGFtemE3NjgxIiwiYSI6ImNscjR6ZWd3NTAxdTIyam9ndml3MGNyb3gifQ.8E-cO5zfW33ddWExzOr0wA`
       )
-      if (res.status === 200 && res.data.results.length > 0) {
-        setCity(res.data.results[0])
+      if (res.status === 200 && res.data.features.length > 0) {
+        setCity(res.data.features)
       }
     } catch (error) {
       console.log(error)
@@ -76,8 +83,8 @@ const OwnLocation = () => {
         `https://api.openweathermap.org/data/2.5/weather?lat=${geometry.lat}&lon=${geometry.lng}&appid=91547d7948bb9c2e48bd0f66d9e08fbb`
       )
       if (result) {
-        setSelectedCity(city.formatted)
-        console.log(result)
+        setSelectedCity(searchCity)
+        // console.log(result)
         setWeather(result.data)
         setLoading(false)
       }
@@ -124,17 +131,24 @@ const OwnLocation = () => {
           />
 
           {showDrop && (
-            <div className='absolute top-[52px] w-full border-[1px] border-gray-200 rounded-[5px] shadow-md z-[99] h-[200px] bg-white'>
-              {city ? (
-                <p
-                  className='text-sm text-teal-500 p-4 hover:bg-gray-100 cursor-pointer'
-                  onClick={() => {
-                    setSearchCity(city.formatted)
-                    setGeometry(city.geometry)
-                    setShowDrop(false)
-                  }}>
-                  {city.formatted}
-                </p>
+            <div className='absolute top-[52px] w-full border-[1px] border-gray-200 rounded-[5px] shadow-md z-[99] min-h-[200px] bg-white'>
+              {city.length > 0 ? (
+                <>
+                  {city.map((x, i) => {
+                    return (
+                      <p
+                        key={i}
+                        className='text-sm text-teal-500 p-4 hover:bg-gray-100 cursor-pointer'
+                        onClick={() => {
+                          setSearchCity(x.place_name)
+                          setGeometry({ lat: x.center[1], lng: x.center[0] })
+                          setShowDrop(false)
+                        }}>
+                        {x.place_name}
+                      </p>
+                    )
+                  })}
+                </>
               ) : (
                 <p className='text-sm text-red-500 p-4 hover:bg-gray-100'>Not Found!</p>
               )}
